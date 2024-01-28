@@ -1,0 +1,18 @@
+- name: Install syncthing
+  apt:
+    name: "syncthing"
+    state: present
+    update_cache: true
+- name: allow syncthing
+  community.general.ufw:
+    rule: allow
+    port: '8384'
+    proto: tcp
+- name: reload ufw
+  community.general.ufw:
+    state: reloaded 
+- name: Start syncthing
+  service:
+    name: syncthing@pi
+    state: started
+    enabled: yes

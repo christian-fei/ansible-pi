@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+  roles:
+    - role: system
+      tags: system
+    - role: firewall
+      tags: firewall
+    - role: usb
+      tags: usb
+    - role: nginx
+      tags: nginx
+    - role: caddy
+      tags: caddy
+    - role: syncthing
+      tags: syncthing
+    - role: geerlingguy.pip
+      tagds: pip
+    - role: geerlingguy.docker_arm
+      tags: docker

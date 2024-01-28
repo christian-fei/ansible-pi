@@ -1,0 +1,63 @@
+---
+- name: Install nginx package
+  apt:
+    name: nginx
+    state: present
+- name: Install dnsmasq package
+  apt:
+    name: dnsmasq
+    state: present
+- name: Set file mode for /boot/config.txt
+  file:
+    path: /boot/config.txt
+    mode: "ugo+rwx"
+- name: Set file mode for /boot/cmdline.txt
+  file:
+    path: /boot/cmdline.txt
+    mode: "ugo+rwx"
+- name: Set file mode for /etc/modules
+  file:
+    path: /etc/modules
+    mode: "ugo+rwx"
+- name: Set file mode for /etc/dhcpcd.conf
+  file:
+    path: /etc/dhcpcd.conf
+    mode: "ugo+rwx"
+- name: Add dtoverlay to /boot/config.txt
+  lineinfile:
+    path: /boot/config.txt
+    line: dtoverlay=dwc2
+- name: Add modules-load to /boot/cmdline.txt
+  replace:
+    path: /boot/cmdline.txt
+    regexp: '(.*)$'
+    replace: '\1 modules-load=dwc2'
+  when: "'modules-load=dwc2' not in lookup('file', '/boot/cmdline.txt')"
+- name: Add libcomposite to /etc/modules
+  lineinfile:
+    path: /etc/modules
+    line: libcomposite
+- name: Add denyinterfaces to /etc/dhcpcd.conf
+  lineinfile:
+    path: /etc/dhcpcd.conf
+    line: denyinterfaces usb0
+- name: Copy to /etc/dnsmasq.d/usb
+  copy:
+    src: dnsmasq.d-usb
+    dest: /etc/dnsmasq.d/usb
+    mode: "ugo+rwx"
+- name: Copy to /etc/network/interfaces.d/usb0
+  copy:
+    src: network-interface-usb0
+    dest: /etc/network/interfaces.d/usb0
+    mode: "ugo+rwx"
+- name: Copy to /etc/network/interfaces.d/usb0
+  copy:
+    src: root-usb.sh
+    dest: /root/usb.sh
+    mode: "ugo+rwx"
+- name: Add command to /etc/rc.local
+  lineinfile:
+    path: /etc/rc.local
+    line: 'sh /root/usb.sh'
+    insertbefore: '^exit 0'

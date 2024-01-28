@@ -1,0 +1,30 @@
+---
+- name: Update packages
+  apt:
+    update_cache: yes
+    upgrade: yes
+- name: Install docker dependencies
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+    - python3-pip
+    - python3-setuptools
+    - ufw
+- name: install ntp
+  become: true
+  apt:
+    name: ntp
+    state: present
+- name: enable ntp
+  service:
+    name: ntp
+    state: started
+    enabled: true

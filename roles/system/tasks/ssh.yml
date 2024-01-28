@@ -1,0 +1,43 @@
+---
+- name: Update SSH configuration to be more secure (thanks Jeff!)
+  lineinfile:
+    dest: "/etc/ssh/sshd_config"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    validate: 'sshd -T -f %s'
+    mode: 0644
+  with_items:
+    #- regexp: "^PasswordAuthentication"
+    #  line: "PasswordAuthentication no"
+    - regexp: "^PubkeyAuthentication"
+      line: "PubkeyAuthentication yes"
+    #- regexp: "^PermitRootLogin"
+    #  line: "PermitRootLogin no"
+    #- regexp: "^UseDNS"
+    #  line: "UseDNS no"
+    #- regexp: "^PermitEmptyPasswords"
+    #  line: "PermitEmptyPasswords no"
+    #- regexp: "^ChallengeResponseAuthentication"
+    #  line: "ChallengeResponseAuthentication no"
+    #- regexp: "^GSSAPIAuthentication"
+    #  line: "GSSAPIAuthentication no"
+    #- regexp: "^X11Forwarding"
+    #  line: "X11Forwarding no"
+  notify: Restart SSH daemon
+- name: Install mosh
+  become: true
+  apt:
+    name: mosh
+    state: present
+- name: Allow port range udp 60000-61000 (mosh)
+  community.general.ufw:
+    rule: allow
+    port: 60000:61000
+    proto: udp
+# Prevents SSH brute force attacks
+- name: install fail2ban
+  become: true
+  apt:
+    name: fail2ban
+    state: present

@@ -16,6 +16,6 @@
     - role: syncthing
       tags: syncthing
     - role: geerlingguy.pip
-      tagds: pip
+      tags: pip
     - role: geerlingguy.docker_arm
       tags: docker
